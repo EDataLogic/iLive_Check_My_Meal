@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="noindex,nofollow,noarchive" name="robots"/><title>Feature issue &amp; acceptance criteria — Check My Meal v2.0</title><link href="../portal.css" rel="stylesheet"/></head><body><div class="wrap"><div class="top"><a class="brand" href="../index.html">iLive / Reference hub</a><span class="badge">Product baseline v2.0</span></div><p class="small">Browser rendering of the unchanged source document. This is a proposed handoff, not production or clinical approval.</p><a download="" href="../v2.0/01_Git_Issue_REPLACE_BODY_v2.0.md">Download original Markdown</a><article class="doc"><h1>[Feature][Free Home] Check My Meal — Real Meal Insights + Care Nutrition Preview (v2.0)</h1>
+<p><strong>Version:</strong> 2.0 · <strong>Date:</strong> 24 September 2026 · <strong>Status:</strong> Proposed replacement; ready for team breakdown, subject to listed release approvals.<br/>
+<strong>Parent:</strong> Preserve the existing Free User / Seven-Day Heart Health Check epic and this feature's issue identity. Live issue number not verified.<br/>
+<strong>Owners:</strong> Product, UX, Backend/API, React Native, Data/Clinical Nutrition, QA; Privacy/Security and Commercial/Operations for their gates.<br/>
+<strong>Suggested labels:</strong> feature, free-user, check-my-meal, backend-driven, nutrition-preview, ux, clinical-review-required.</p>
+<h2>1. Background and problem</h2>
+<p>The business prototype offers food guidance that changes with a programme or recorded condition. Our earlier free-MVP issue deliberately narrowed real meal analysis to a single general heart-health profile. That protects the calculation boundary, but by itself does not explain to a person interested in diabetes, blood pressure or kidney care how iLive's nutrition support could be relevant to them.</p>
+<p>The user's updated product direction is to make that relevance visible before purchase. We should reuse suitable category-specific material from the prototype, without implying that browsing a category constitutes diagnosis, enrolment or an individually prescribed diet. We must also avoid a misleading experience where a diabetes-themed header sits above a meal result still calculated using unrelated general rules.</p>
+<h2>2. Objective and user value</h2>
+<p>Give free users two useful choices within <strong>Check My Meal</strong>:</p>
+<ol>
+<li><strong>Understand an actual meal:</strong> photograph or manually enter food, correct and confirm it, and receive reproducible estimated nutrition information with general guidance where permitted.</li>
+<li><strong>Explore relevant care:</strong> browse an educational nutrition preview for a care interest, understand what topics individual support can consider, and reach the existing eligible plan journey.</li>
+</ol>
+<p>For users, the difference must be visible without reading a disclaimer: <strong>“Your meals” is about food they submitted; “Explore care” is about services and nutrition topics they are browsing.</strong> The business benefit is a clearer, relevant introduction to paid care; increased retention/conversion is a hypothesis to measure, not a guaranteed outcome.</p>
+<h2>3. Scope boundary and non-goals</h2>
+<p>This issue updates Check My Meal only. Do not redesign Your Diet, heart assessment, login, lab services, paid Home, payment processing or device pairing. Do not add a new master epic.</p>
+<p>Included: feature hub; six draft category profiles; reusable previews; shared state-aware care CTA; consent and safety/preferences; camera/gallery/manual input; mapping and confirmation; general/facts-only results; immutable history/revisions; active/expired/error states; backend configuration and release governance.</p>
+<p>Excluded: condition-specific real-meal scoring; patient-specific calorie/protein/mineral/fluid targets; “kcal left” budgets; daily intake totals; automatic diagnosis or programme assignment; dietitian review/callback/queues; new paid meal entitlement; measured/predicted personal glucose; live meal coaching; medication advice; a new content-admin application. Existing content administration or a controlled publishing pipeline may be used.</p>
+<h2>4. Two modes — one unambiguous contract</h2>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>YOUR_MEALS</th>
+<th>CARE_PREVIEW</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Purpose</td>
+<td>Actual confirmed meal insight</td>
+<td>Educational exploration of care nutrition</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>Confirmed foods, portions, preparation, meal slot</td>
+<td>User-selected browsing category</td>
+</tr>
+<tr>
+<td>Rule selection</td>
+<td>Backend-owned general rule profile, with separate safety mode</td>
+<td>Backend-approved content bundle only</td>
+</tr>
+<tr>
+<td>Result</td>
+<td>Estimated facts and permitted general observations</td>
+<td>Nutrition topics, general context and eligible care benefits</td>
+</tr>
+<tr>
+<td>Persists</td>
+<td>Authenticated meal record and its exact versions</td>
+<td>Optional protected browsing preference; not a diagnosis</td>
+</tr>
+<tr>
+<td>May change actual meal targets?</td>
+<td>Only an approved analysis-policy release</td>
+<td><strong>Never</strong></td>
+</tr>
+<tr>
+<td>After Day 7</td>
+<td>History only; bounded in-flight exception</td>
+<td>Approved previews remain readable</td>
+</tr>
+</tbody>
+</table>
+<p>A preview category must not be a parameter accepted by the meal-calculation request. The service must reject an attempted category/rule override, rather than trust a hidden mobile field. Selecting a preview never creates or edits a medical condition, assessment answer, free episode, subscription, clinician task or timer.</p>
+<h2>5. Screen and navigation behaviour</h2>
+<h3>CM-01 — Home entry and hub</h3>
+<p>Retain the Home card title <strong>Check My Meal</strong>. Suggested subtitle: <strong>“Understand your meal. Explore nutrition support.”</strong> Open the feature hub on <strong>Your meals</strong>, with <strong>Explore care</strong> equally discoverable. Do not force a care-category selection before a real check. Preserve tab, scroll and selected preview on return. Do not redesign adjacent Home features.</p>
+<p>The Your meals tab explains that the live free check uses general heart-health rules, shows an eligible <strong>Check a meal</strong> action and <strong>Past insights</strong>, and names the active free window. The Explore care tab opens an optional category picker and the matching preview. A user may choose <strong>General heart-health information / Not sure</strong>; do not infer a diagnosis or programme from this action.</p>
+<h3>CM-02 — Category previews</h3>
+<p>The source has six food-rule profiles: longevity/prevention, diabetes, hypertension, kidney disease without dialysis, kidney disease on dialysis, and recovery. Support these as six catalogue entries; publish only entries with complete Medical/Product approval. Their presence in the prototype is not launch approval, and absence of a paid plan must not be hidden behind a fake purchase button.</p>
+<p>Every preview displays:</p>
+<ul>
+<li>A permanent <strong>CARE PREVIEW · NOT YOUR PERSONAL DIET</strong> label and selected category.</li>
+<li><strong>Food topics for this care area</strong>, replacing the personal-sounding “Your food rules”.</li>
+<li>Relevant predefined nutrient topics, short explanatory content and approved important context.</li>
+<li><strong>How individual targets are set</strong>, not the prototype's numeric daily allowance.</li>
+<li>An approved care-benefits panel and the shared state-aware action.</li>
+</ul>
+<p>Update the complete preview atomically when the category changes. Do not leave another category's warnings, suggestions, CTA or headings on screen. When a profile has no warning, omit its warning component rather than show an empty danger card. No automatic combination of condition templates. A multiple-concern message explains that an individual plan considers conditions together; it does not collect a new medical diagnosis.</p>
+<h3>CM-03 — Actual meal journey</h3>
+<p>From Your meals: authorise access → first-use explanation/consent → complete the existing safety/preferences → choose meal slot and camera/gallery/manual entry → recognition where applicable → user correction/confirmation → service calculation → automatically saved result.</p>
+<p>Retain all three input routes. Native camera/gallery permission denial offers manual entry. Every food, portion and preparation must map to the approved catalogue before calculation; a photo's confidence never bypasses confirmation. Low confidence/unmapped items require correction, replacement or explicit removal. No typical meal or missing-nutrient-zero fallback.</p>
+<h3>CM-04 — Results and history</h3>
+<p>Label results <strong>Estimated meal insight · General heart-health reference</strong> or <strong>Estimated nutrient facts only</strong>. Do not put the currently browsed condition above an actual result or relabel old results when the preview changes. The result template may show nutrient totals, rule-derived observations and at most three permitted actions. Historical results use the same template in immutable mode with the original date and versions.</p>
+<p>Keep the existing single general profile and its clinical release gates. Facts-only mode has no colour verdict, suitability classification, target comparison, add/reduce/swap advice or glucose-impact category. This revision makes that suppression explicit. Changing safety answers invalidates any unfinished confirmation; an old completed record is not recalculated silently. Editing a completed record creates a new authorised draft revision and retains its predecessor.</p>
+<h3>CM-05 — Today, calories and educational examples</h3>
+<p>Keep meal-slot selection and timestamped history, but do not copy the prototype's daily allowance, remaining calories, daily completion ring or four-check limit. Source rules permit multiple checks in the same slot; a check is not proof the user consumed that meal. For this MVP there is no complete daily intake ledger. Calories may appear as an estimate for the confirmed meal. Any future demo must be clearly labelled, kept out of personal history and never used after real analysis fails. Numeric preview examples are deferred in this revision to avoid a personal-budget implication.</p>
+<h2>6. Backend-first ownership</h2>
+<p>The backend supplies entitlement, preview category visibility and ordering, complete published content, typed sections, action destinations, safety decisions, catalogue mapping, calculations, result wording and versioned history. React Native supplies an allowlisted component renderer, input capture, native permissions, accessibility and navigation.</p>
+<p>Content edits, categories using existing components, copy, approved ordering and commercial action rules should not require app releases. A new interactive component/schema capability still requires a mobile release and compatibility checks. Do not download executable rules or arbitrary HTML. Extend current services rather than mandate new microservices.</p>
+<p>Separate <code>previewCategoryId</code> from <code>analysisPolicyId</code>. Preserve server rules independent of the user's preview choice. The detailed API, security, caching and state contracts are in <code>02_Backend_and_Mobile_Contract_v2.0.md</code>.</p>
+<h2>7. Eligibility, attempt deadline and expiry</h2>
+<ul>
+<li>New checks: authenticated/authorised adult profile with the central free programme ACTIVE and server time before its end. No independent timer; no new one-meal-per-day limit.</li>
+<li>Every attempt must be created server-side while eligible and expire 60 minutes after creation. Completing a draft requires valid ownership/account permission, an open attempt, a current confirmed revision and server time <strong>at or before</strong> that deadline.</li>
+<li>An attempt created before Day 7 ends may finish once within its original deadline. Continued free eligibility does not extend an old attempt; it allows a new authorised attempt.</li>
+<li>Repeated finalisation of a completed attempt returns the same stored result. Retrying does not create duplicate meals. Storage TTL is not authorisation.</li>
+<li>After expiry, lock new camera/gallery/manual analysis; retain history and approved previews. Purchasing/pending hardware does not restore free analysis. Active paid access is determined by the existing paid system, not this issue.</li>
+<li>Account suspension/ownership failure overrides completion grace. After a safety rule or consent version changes, recheck before finalisation; reject revoked rule versions and do not invent a replacement result.</li>
+</ul>
+<h2>8. Care conversion without duplicate purchase</h2>
+<p>Every CTA from preview, result, history or expiry resolves against the selected profile: active paid → existing care; unresolved order → track status; eligible/no pending plan → currently available plans; unresolved/loading → retry/read-only. Revalidate at the service boundary before checkout. Preserve the source context for back navigation.</p>
+<p>Do not promise weekly dietitian review, instant response, continued meal analysis or a nutritionist assignment unless included in a confirmed available plan. Payment, fulfilment and clinical activation are separate. Preview category selection does not map one-to-one to a purchasable programme unless the business catalogue explicitly says so.</p>
+<h2>9. Privacy, safety and content governance</h2>
+<p>Retain the source security contract: backend-only provider credentials; authenticated private uploads; format/size/content validation; EXIF removal; recognition provider receives only necessary image/note; no health or food data in general analytics. Retain structured completed records under the approved account/clinical policy.</p>
+<p>Preserve the source's proposed terminal image deletion within 15 minutes and abandoned-storage hard 24-hour TTL, subject to Privacy/Security approval. Neither permits attempt completion after 60 minutes. Complete deletion must cover retry workers/cache/object storage as well as the app.</p>
+<p>The six content profiles in this pack are editorial drafts with production disabled. Preserve source copy in reference records, but do not publish its disease directives, medication timing or absolute longevity/safety claims unchanged. Medical approval is a real release gate; a disclaimer is not a substitute. Detailed care-content policy is in <code>05_Content_Governance_v2.0.md</code>.</p>
+<h2>10. Acceptance criteria</h2>
+<ol>
+<li>Both hub activities are accessible; category exploration is never a compulsory gate for real checking.</li>
+<li>Each published preview shows its category and preview label consistently across all visible sections.</li>
+<li>A browsing choice never changes diagnoses, episode/timer, analysis policy, safeguards or completed records.</li>
+<li>Identical real-meal inputs and versions produce identical output across all six preview selections.</li>
+<li>New checks obey central entitlement; a server-authorised pre-expiry attempt can finish once before its original deadline.</li>
+<li>A 61-minute-old draft cannot be revived simply because Day 2 access is active.</li>
+<li>All input paths require mapped, user-confirmed foods/quantities; no fabricated nutrients or substitute meal.</li>
+<li>Facts-only output suppresses comparisons, verdicts, suggestions and glucose-impact information.</li>
+<li>History is immutable; revision is a new authorised draft; examples never enter it.</li>
+<li>No daily calorie budget, unsupported daily quota, condition-specific actual verdict or personal target is introduced.</li>
+<li>All commercial origins respect active/pending/eligible/unresolved selected-profile state.</li>
+<li>A complete valid content bundle renders; unavailable/revoked/unsupported content fails safely without unrelated-category substitution.</li>
+<li>Late responses cannot show another profile's health record or overwrite a newer category selection.</li>
+<li>Content and rule changes are independently versioned and auditable; revoked versions cannot authorise new work.</li>
+<li>Existing Your Diet, assessment, labs, paid Home and device journeys pass regression testing.</li>
+<li>Screen-reader, large-text, contrast, non-colour status and native-permission recovery are verified on supported iOS/Android devices.</li>
+<li>Required Medical/Product/Privacy/Security/Commercial approvals and implementation tests are recorded before release.</li>
+</ol>
+<h2>11. Delivery and evidence</h2>
+<p>Use the accompanying backend contract, draft content, inherited calculation contract, workflows, screen map, mocks and QA matrix as one v2.0 set. The work-package plan separates content governance, server configuration, meal processing, mobile, commerce and integrated QA without implying a time estimate.</p>
+<p><strong>Definition of done:</strong> agreed scope and mappings; working production integrations; reviewed content and clinical policy; reproducible results; enforced safety/expiry; validated privacy/security; approved UX; completed automated/manual QA and regression evidence. Supplied mocks and artifact checks are NOT this evidence.</p>
+<h2>12. Sources and change control</h2>
+<p>S01 is the previous Check My Meal issue; S02 is the supplied prototype <code>ILiveConnect.jsx</code>; S03 is the cross-feature review; S04 is Care Programme discovery v1.1. Full identifiers and proposed changes appear in <code>10_Source_and_Change_Log_v2.0.md</code>.</p>
+<p>This is a proposed replacement, not an append-only addendum. On acceptance preserve the issue identity, link this versioned pack, retire old mocks and record the approvers. Your Diet will be reviewed separately.</p>
+</article></div></body></html>

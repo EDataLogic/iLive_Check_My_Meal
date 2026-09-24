@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="noindex,nofollow,noarchive" name="robots"/><title>Start here — Check My Meal v2.0</title><link href="../portal.css" rel="stylesheet"/></head><body><div class="wrap"><div class="top"><a class="brand" href="../index.html">iLive / Reference hub</a><span class="badge">Product baseline v2.0</span></div><p class="small">Browser rendering of the unchanged source document. This is a proposed handoff, not production or clinical approval.</p><a download="" href="../v2.0/00_START_HERE.md">Download original Markdown</a><article class="doc"><h1>Check My Meal — complete replacement handoff v2.0</h1>
+<p><strong>24 September 2026 · iLive · Product / UX / Backend / Mobile / QA / Clinical / Operations</strong></p>
+<h2>Start here</h2>
+<p>Use <code>01_Git_Issue_REPLACE_BODY_v2.0.md</code> as the proposed replacement body for the existing Check My Meal issue. Keep its existing issue number, history, assignees and parent epic. No live GitHub issue was changed: the connector returned no accessible repositories. The source issue number is not verified.</p>
+<p>Open <code>UX/Check_My_Meal_v2.0.html</code> in a browser for the interactive review mock. The HTML is self-contained and uses illustrative fixtures only; it is not an app build or a nutrition service. <code>UX/Check_My_Meal_Mock_Screens_v2.0.pdf</code> contains annotated screen states; <code>UX/PNG</code> contains the individual images. Open <code>Workflows</code> for the flow diagrams and editable Mermaid sources.</p>
+<h2>Product decision carried into this revision</h2>
+<p>One feature, two clearly separated activities:</p>
+<ul>
+<li><strong>Your meals:</strong> genuine, user-confirmed meal input and the retained general heart-health calculation, or facts-only output under the safety policy.</li>
+<li><strong>Explore care:</strong> category-specific educational previews showing the nutrition topics that relevant care can consider. A browsing choice is not a diagnosis, enrolment or a scoring-rule selection.</li>
+</ul>
+<p>The review does NOT activate condition-specific judging of the user's actual meal. Those clinical rules remain a separately approved future paid-care scope. Your Diet is NOT changed by this pack.</p>
+<h2>Status and approval</h2>
+<p>This is an implementation-planning proposal based on the user's latest direction. It is not a record of medical, privacy, commercial or final UX sign-off. Draft category content is <code>productionEnabled=false</code>; only approved, published bundles may render in production. Backend endpoint names and schemas are proposed contracts to align with existing services, not claims that APIs already exist.</p>
+<h2>What to replace</h2>
+<p>Replace the prior Check My Meal issue body and UX reference with this matching v2.0 set after the relevant owners accept the revision. Do not append the old contradictory issue underneath. Do not use the two earlier generated infographic images as implementation specifications: their one-meal-per-day quota, personal-looking calorie balance, automatic category-to-scoring sequence and expanded paid-service promises are not carried forward.</p>
+<h2>Files</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Reader / purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>01_Git_Issue_REPLACE_BODY_v2.0.md</code></td>
+<td>All stakeholders; complete scope and acceptance baseline</td>
+</tr>
+<tr>
+<td><code>02_Backend_and_Mobile_Contract_v2.0.md</code></td>
+<td>Engineering; server ownership, APIs, states, permissions, caching</td>
+</tr>
+<tr>
+<td><code>03_Workflows_v2.0.md</code> and <code>Workflows/</code></td>
+<td>Product, UX and engineering; flows and state transitions</td>
+</tr>
+<tr>
+<td><code>04_Content_Catalogue_v2.0.json</code></td>
+<td>Content/engineering; six disabled draft preview profiles</td>
+</tr>
+<tr>
+<td><code>05_Content_Governance_v2.0.md</code></td>
+<td>Medical, Product and Content; reuse decisions and release gates</td>
+</tr>
+<tr>
+<td><code>06_Calculation_Contract_v2.0.md</code></td>
+<td>Backend/Data/Clinical; retained v1 general rules with explicit precision correction</td>
+</tr>
+<tr>
+<td><code>07_QA_Acceptance_v2.0.md</code></td>
+<td>QA; executable test descriptions, not test results</td>
+</tr>
+<tr>
+<td><code>08_Execution_Work_Packages_v2.0.md</code></td>
+<td>Delivery planning; owners, outputs, dependencies and completion conditions</td>
+</tr>
+<tr>
+<td><code>09_UX_Screen_Map_v2.0.md</code></td>
+<td>UX/Mobile; templates versus state snapshots and interaction notes</td>
+</tr>
+<tr>
+<td><code>10_Source_and_Change_Log_v2.0.md</code></td>
+<td>Traceability; source versus proposed changes</td>
+</tr>
+<tr>
+<td><code>Backend_Examples/</code></td>
+<td>Illustrative payloads and preview JSON Schema</td>
+</tr>
+<tr>
+<td><code>Reference_ONLY/</code></td>
+<td>Original issue and verified prototype excerpts; not the new implementation baseline</td>
+</tr>
+<tr>
+<td><code>Validation_Report.json</code></td>
+<td>Artifact checks actually run; not production clinical/API/QA validation</td>
+</tr>
+</tbody>
+</table>
+<p><strong>No duration or engineering-effort commitment is made in this package.</strong></p>
+</article></div></body></html>

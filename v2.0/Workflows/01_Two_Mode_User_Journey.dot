@@ -1,0 +1,23 @@
+
+digraph flow {
+ graph [rankdir=TB, bgcolor="white", pad=.3, nodesep=.3, ranksep=.5, fontname="Arial", label="Check My Meal v2.0 | User journey", labelloc=t, fontsize=22];
+ node [shape=box, style="rounded,filled", fillcolor="#edf5fc", color="#557895", fontname="Arial", fontsize=12, margin=".18,.14"];
+ edge [color="#557895", fontname="Arial", fontsize=10];
+ home [label="Existing Free Home\nCheck My Meal entry"];
+ hub [label="Feature hub\nYour meals | Explore care",fillcolor="#d9ebf8"];
+ cat [label="Optional category interest\nNo diagnosis or enrolment"];
+ preview [label="Approved category preview\nTopics + context + care benefits"];
+ check [label="Authorise actual meal check\nCentral free access + adult profile"];
+ valid [shape=diamond,label="New check\nauthorised?",fillcolor="#fff3d9"];
+ input [label="Consent + safeguards\nPhoto / gallery / manual catalogue"];
+ confirm [label="Map and confirm every food\nPortion + preparation + revision"];
+ result [label="General heart-health result\nOR nutrient facts only"];
+ history [label="Immutable completed history\nNo daily intake budget"];
+ locked [label="Analysis locked\nKeep history + approved previews",fillcolor="#fce9e8"];
+ care [label="Existing care action resolver\nPlans / Track activation / Current care"];
+ home -> hub;hub -> cat [label="Explore care"];cat -> preview;preview -> care;preview -> hub [label="Your meals"];
+ hub -> check [label="Your meals"];check -> valid;valid -> input [label="Yes"];valid -> locked [label="No"];locked -> cat;locked -> history;
+ input -> confirm;confirm -> result [label="Trusted calculation"];result -> history;result -> care;
+ note [shape=note,label="Preview category NEVER selects\nthe real-meal scoring policy.",fillcolor="#e2f3ec",color="#4d977a"];
+ preview -> note [style=dashed,arrowhead=none]; result -> note [style=dashed,arrowhead=none];
+}

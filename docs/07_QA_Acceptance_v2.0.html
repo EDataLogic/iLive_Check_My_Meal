@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="noindex,nofollow,noarchive" name="robots"/><title>QA scenarios — Check My Meal v2.0</title><link href="../portal.css" rel="stylesheet"/></head><body><div class="wrap"><div class="top"><a class="brand" href="../index.html">iLive / Reference hub</a><span class="badge">Product baseline v2.0</span></div><p class="small">Browser rendering of the unchanged source document. This is a proposed handoff, not production or clinical approval.</p><a download="" href="../v2.0/07_QA_Acceptance_v2.0.md">Download original Markdown</a><article class="doc"><h1>QA acceptance matrix — v2.0</h1>
+<p><strong>46 proposed scenarios. Not production tests already executed.</strong> Combine with the exact numeric examples in <code>06_Calculation_Contract_v2.0.md</code>, approved security tests and supported-device regression.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Area</th>
+<th>Given / action</th>
+<th>Expected</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q01</td>
+<td>Mode separation</td>
+<td>Open from Free Home</td>
+<td>Your meals is default; Explore care visible; no mandatory category choice.</td>
+</tr>
+<tr>
+<td>Q02</td>
+<td>Mode separation</td>
+<td>Browse every one of six previews then check identical meal</td>
+<td>Same real policy, numeric output and safety decisions for the same confirmed inputs and versions.</td>
+</tr>
+<tr>
+<td>Q03</td>
+<td>Mode separation</td>
+<td>Inject previewCategoryId/ruleId/safetyMode in attempt/complete</td>
+<td>Schema rejects unsupported overrides; no clinical mode switch.</td>
+</tr>
+<tr>
+<td>Q04</td>
+<td>Content</td>
+<td>Switch diabetes → kidney while old response is delayed</td>
+<td>All preview blocks update together; late diabetes payload cannot overwrite kidney.</td>
+</tr>
+<tr>
+<td>Q05</td>
+<td>Content</td>
+<td>Inspect six profile bundles</td>
+<td>Correct priority topic list, source identity, preview label and no automatic enrolment.</td>
+</tr>
+<tr>
+<td>Q06</td>
+<td>Content</td>
+<td>Unapproved/incomplete/revoked bundle</td>
+<td>Not published; no partial warnings or unrelated-category fallback.</td>
+</tr>
+<tr>
+<td>Q07</td>
+<td>Content</td>
+<td>Unsupported required block/schema</td>
+<td>Neutral unavailable/update state, not a page missing a required warning.</td>
+</tr>
+<tr>
+<td>Q08</td>
+<td>Content</td>
+<td>Expired free programme</td>
+<td>Approved preview remains readable without reopening real checks.</td>
+</tr>
+<tr>
+<td>Q09</td>
+<td>Content</td>
+<td>Multiple-concern user browses a category</td>
+<td>No template combination/diagnosis write; clear individual-review context.</td>
+</tr>
+<tr>
+<td>Q10</td>
+<td>Inputs</td>
+<td>Camera success, high confidence</td>
+<td>Explicit mapped item/portion confirmation still required.</td>
+</tr>
+<tr>
+<td>Q11</td>
+<td>Inputs</td>
+<td>Camera permission denied permanently</td>
+<td>Settings guidance plus gallery/manual alternatives; no forced camera loop.</td>
+</tr>
+<tr>
+<td>Q12</td>
+<td>Inputs</td>
+<td>HEIC/photo orientation and unsupported/corrupt/oversized files</td>
+<td>Normalise valid formats; reject invalid content; no result from a sample meal.</td>
+</tr>
+<tr>
+<td>Q13</td>
+<td>Inputs</td>
+<td>No food/blur/multiple plates</td>
+<td>Explain and offer correction/retake/manual; no fabricated data.</td>
+</tr>
+<tr>
+<td>Q14</td>
+<td>Inputs</td>
+<td>Medium/low/malformed confidence</td>
+<td>Highlight uncertain items; low/malformed cannot be accepted unmapped.</td>
+</tr>
+<tr>
+<td>Q15</td>
+<td>Inputs</td>
+<td>Manual search → preparation → portion → add/remove</td>
+<td>Approved records only; zero/missing quantity blocked; confirmation invalidated on edit.</td>
+</tr>
+<tr>
+<td>Q16</td>
+<td>Inputs</td>
+<td>Required nutrient/free-sugar mapping absent</td>
+<td>No zero fallback or traffic-light result; resolve/replace/remove or stop.</td>
+</tr>
+<tr>
+<td>Q17</td>
+<td>Safety</td>
+<td>Each unanswered mandatory safeguard</td>
+<td>No submit; no default No/None; field-level recovery.</td>
+</tr>
+<tr>
+<td>Q18</td>
+<td>Safety</td>
+<td>Kidney/dialysis YES or NOT_SURE</td>
+<td>Facts-only; no targets, verdict, suggestions or glucose impact.</td>
+</tr>
+<tr>
+<td>Q19</td>
+<td>Safety</td>
+<td>Prescribed diet YES/NOT_SURE or pregnancy YES/PREFER_NOT_TO_SAY</td>
+<td>Same facts-only suppression; historical output unchanged.</td>
+</tr>
+<tr>
+<td>Q20</td>
+<td>Safety</td>
+<td>Insulin/sulfonylurea YES/NOT_SURE and reduction suggestion</td>
+<td>Retained approved guard applied; no meal skipping or prohibited reduction.</td>
+</tr>
+<tr>
+<td>Q21</td>
+<td>Safety</td>
+<td>Allergy/preference excludes all suggested candidates</td>
+<td>No conflicting food suggestion; only permitted neutral observation.</td>
+</tr>
+<tr>
+<td>Q22</td>
+<td>Safety</td>
+<td>Change safety or consent while worker calculates</td>
+<td>Finalisation rechecks; stale confirmation cannot commit; no extension of deadline.</td>
+</tr>
+<tr>
+<td>Q23</td>
+<td>Rules</td>
+<td>Same food/quantity/catalogue/rule versions across input routes</td>
+<td>Same totals, normalized scoring, verdict and wording.</td>
+</tr>
+<tr>
+<td>Q24</td>
+<td>Rules</td>
+<td>Source energy/fibre/carbohydrate exact thresholds and adjacent rounded values</td>
+<td>Matches retained calculation contract with half-up scoring and strict comparison.</td>
+</tr>
+<tr>
+<td>Q25</td>
+<td>Rules</td>
+<td>Optional glucose-impact flag off or prerequisites missing</td>
+<td>No output or personal glucose prediction.</td>
+</tr>
+<tr>
+<td>Q26</td>
+<td>Entitlement</td>
+<td>Programme available not activated; under18; suspended account</td>
+<td>New checks blocked with distinct reason; browsing eligibility uses its own policy.</td>
+</tr>
+<tr>
+<td>Q27</td>
+<td>Entitlement</td>
+<td>Request at programmeEndsAt or expired deep link</td>
+<td>No new attempt; history/preview remain separately governed.</td>
+</tr>
+<tr>
+<td>Q28</td>
+<td>Entitlement</td>
+<td>Attempt created before free expiry; complete at &lt;=60-minute deadline</td>
+<td>Exactly one completed result with original rule/version.</td>
+</tr>
+<tr>
+<td>Q29</td>
+<td>Entitlement</td>
+<td>Attempt older than60 minutes while free programme active</td>
+<td>Old attempt rejected; eligible user may create a new one.</td>
+</tr>
+<tr>
+<td>Q30</td>
+<td>Entitlement</td>
+<td>Worker starts before deadline but commit is after deadline</td>
+<td>No late completed result; clear timeout and cleanup.</td>
+</tr>
+<tr>
+<td>Q31</td>
+<td>Concurrency</td>
+<td>Double-tap complete; retry after success; changed request same key</td>
+<td>Same result for identical replay; conflicting key payload rejected.</td>
+</tr>
+<tr>
+<td>Q32</td>
+<td>Concurrency</td>
+<td>Concurrent edit/cancel/complete or late recognition callback</td>
+<td>Revision/terminal-state guard prevents stale save or resurrected attempt.</td>
+</tr>
+<tr>
+<td>Q33</td>
+<td>History</td>
+<td>Multiple successful checks same meal slot</td>
+<td>Separate timestamped checks, no implied consumption or daily total.</td>
+</tr>
+<tr>
+<td>Q34</td>
+<td>History</td>
+<td>Read old result after changing category/rules/preferences</td>
+<td>Original protected snapshot; no silent recalculation.</td>
+</tr>
+<tr>
+<td>Q35</td>
+<td>History</td>
+<td>Edit old result after expiry</td>
+<td>No new draft unless newly authorised; source history stays immutable.</td>
+</tr>
+<tr>
+<td>Q36</td>
+<td>Profile</td>
+<td>Switch linked profile while content/meal response in flight</td>
+<td>No cross-profile result, preferences, history or checkout state.</td>
+</tr>
+<tr>
+<td>Q37</td>
+<td>Commerce</td>
+<td>Pending order from any entry origin</td>
+<td>Track activation only; no duplicate base purchase or renewed free access.</td>
+</tr>
+<tr>
+<td>Q38</td>
+<td>Commerce</td>
+<td>Active paid + renewal pending</td>
+<td>Existing paid care; no forced Free Home or invented paid meal entitlement.</td>
+</tr>
+<tr>
+<td>Q39</td>
+<td>Commerce</td>
+<td>Cancellation requested vs confirmed terminal; plan unavailable</td>
+<td>Lock remains until terminal; unavailable benefits never promised.</td>
+</tr>
+<tr>
+<td>Q40</td>
+<td>Privacy</td>
+<td>Inspect app bundle, provider requests, logs and analytics</td>
+<td>No provider secret/identifiers/diagnoses/preview interests/food data leaked outside approved boundaries.</td>
+</tr>
+<tr>
+<td>Q41</td>
+<td>Privacy</td>
+<td>Complete/cancel/fail/abandon then verify cleanup</td>
+<td>Deletion periods and caches/queues enforced; storage TTL cannot authorise attempts.</td>
+</tr>
+<tr>
+<td>Q42</td>
+<td>Failure</td>
+<td>Offline or catalogue/entitlement outage</td>
+<td>No fail-open analysis; valid private history/cache policy only; recoverable navigation.</td>
+</tr>
+<tr>
+<td>Q43</td>
+<td>UX</td>
+<td>Native screen reader, large text and narrow screen</td>
+<td>Logical focus, readable labels, adequate controls and no colour-only state.</td>
+</tr>
+<tr>
+<td>Q44</td>
+<td>Regression</td>
+<td>Your Diet, assessment, lab report exception, existing paid flow</td>
+<td>No changes from this issue; no new clinical queue or automatic review.</td>
+</tr>
+<tr>
+<td>Q45</td>
+<td>Release</td>
+<td>Attempt deployment with sample/draft fixture data</td>
+<td>Build/release pipeline rejects productionDisabled, fixtureOnly and missing approvals.</td>
+</tr>
+<tr>
+<td>Q46</td>
+<td>Workflow</td>
+<td>Back from plan/preview/real result to hub</td>
+<td>Correct tab, selected preview and history preserved; no meal lost or quota consumed.</td>
+</tr>
+</tbody>
+</table>
+</article></div></body></html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="noindex,nofollow,noarchive" name="robots"/><title>Workflow specification — Check My Meal v2.0</title><link href="../portal.css" rel="stylesheet"/></head><body><div class="wrap"><div class="top"><a class="brand" href="../index.html">iLive / Reference hub</a><span class="badge">Product baseline v2.0</span></div><p class="small">Browser rendering of the unchanged source document. This is a proposed handoff, not production or clinical approval.</p><a download="" href="../v2.0/03_Workflows_v2.0.md">Download original Markdown</a><article class="doc"><h1>User, backend and attempt workflows — v2.0</h1>
+<p>The diagrams describe the proposed feature, not existing production integrations. Read with the issue and backend contract.</p>
+<h2>Two activities. No hidden clinical switch.</h2>
+<p><img alt="Two activities. No hidden clinical switch." src="../v2.0/Workflows/01_Two_Mode_User_Journey.png"/>
+Editable: <code>Workflows/01_Two_Mode_User_Journey.mmd</code> (Mermaid) and <code>.dot</code> (Graphviz).</p>
+<pre><code class="language-mermaid">flowchart TD
+ H[Existing Free Home] --&gt; U[Check My Meal hub]
+ U --&gt;|Explore care| P[Optional category interest]
+ P --&gt; C[Approved educational preview]
+ C --&gt; A[Existing profile-aware care action]
+ C --&gt;|Your meals| U
+ U --&gt;|Actual meal| E{Authorised new check?}
+ E --&gt;|No| X[Lock analysis; retain history and previews]
+ E --&gt;|Yes| S[Consent and safeguards]
+ S --&gt; I[Photo / gallery / manual catalogue]
+ I --&gt; M[Map and explicitly confirm food / portion / preparation]
+ M --&gt; R[General result or facts-only]
+ R --&gt; L[Immutable completed history]
+ R --&gt; A
+ N[Preview category never selects clinical rules] -.-&gt; C
+ N -.-&gt; R
+</code></pre>
+<h2>Configuration changes content, not patient facts.</h2>
+<p><img alt="Configuration changes content, not patient facts." src="../v2.0/Workflows/02_Backend_First_Responsibilities.png"/>
+Editable: <code>Workflows/02_Backend_First_Responsibilities.mmd</code> (Mermaid) and <code>.dot</code> (Graphviz).</p>
+<pre><code class="language-mermaid">flowchart LR
+ UI[React Native: typed blocks and input] --&gt; C[Context and profile authorisation]
+ C --&gt; P[Approved preview publication]
+ P --&gt; UI
+ C --&gt; A[Bounded attempts and revisions]
+ A --&gt; V[Recognition: candidates only]
+ V --&gt; A
+ A --&gt; F[Governed food catalogue]
+ F --&gt; E[General policy and safeguards]
+ A --&gt; E
+ E --&gt; H[Immutable results]
+ H --&gt; UI
+ C --&gt; B[Existing commercial resolver]
+ B --&gt; UI
+</code></pre>
+<h2>The attempt deadline is independent of the programme timer.</h2>
+<p><img alt="The attempt deadline is independent of the programme timer." src="../v2.0/Workflows/03_Attempt_Expiry_and_Commit.png"/>
+Editable: <code>Workflows/03_Attempt_Expiry_and_Commit.mmd</code> (Mermaid) and <code>.dot</code> (Graphviz).</p>
+<pre><code class="language-mermaid">flowchart TD
+ A[Create trusted attempt while free access is active] --&gt; D[Draft / recognition / confirmation]
+ D --&gt; G{All authorisation, deadline, revision and safety checks pass?}
+ G --&gt;|Yes| C[Calculate and recheck atomically at save]
+ G --&gt;|No| X[Block with reason]
+ C --&gt;|Valid commit| R[One immutable completed result]
+ C --&gt;|Changed / late| X
+ D --&gt;|Cancel / terminal failure| T[Terminal; no history]
+ X --&gt; T
+ R --&gt; Z[Transient image cleanup]
+ T --&gt; Z
+ N[60-minute attempt deadline never extends] -.-&gt; G
+</code></pre>
+<h2>Exceptions shared by both activities</h2>
+<p>Changing preview category refreshes the complete educational bundle only. Changes to the protected safety answers can change actual output mode; they do not change published preview content. Profile switching invalidates prior private requests. Pending order status changes only the commercial action and does not extend meal entitlement. Error recovery never introduces a demo result into personal history.</p>
+<h2>Future paid extension</h2>
+<p>The same UI blocks, catalogue mapping and result storage can be reused. Patient-specific clinical selection, personal nutrient targets, multi-condition reconciliation, nutritionist operations and paid entitlements require their own scope, contracts and approvals. Do not turn them on by reusing the prototype name-matching function.</p>
+</article></div></body></html>

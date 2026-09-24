@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="noindex,nofollow,noarchive" name="robots"/><title>Backend &amp; mobile contract — Check My Meal v2.0</title><link href="../portal.css" rel="stylesheet"/></head><body><div class="wrap"><div class="top"><a class="brand" href="../index.html">iLive / Reference hub</a><span class="badge">Product baseline v2.0</span></div><p class="small">Browser rendering of the unchanged source document. This is a proposed handoff, not production or clinical approval.</p><a download="" href="../v2.0/02_Backend_and_Mobile_Contract_v2.0.md">Download original Markdown</a><article class="doc"><h1>Backend and mobile implementation contract — Check My Meal v2.0</h1>
+<p><strong>Proposed service contract, not an existing API inventory.</strong> Align route names and storage with the current iLive backend. No new service deployment or CMS user interface is mandated.</p>
+<h2>1. Ownership boundary</h2>
+<table>
+<thead>
+<tr>
+<th>Responsibility</th>
+<th>Backend / governed configuration</th>
+<th>React Native</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Profile and free/paid/order access</td>
+<td>Resolve from authorised selected profile and trusted timestamps</td>
+<td>Render returned capabilities; never infer from cached <code>isFree</code></td>
+</tr>
+<tr>
+<td>Preview</td>
+<td>Published category, ordering, all copy, supported blocks, benefit mapping, revocation</td>
+<td>Reusable templates, tab/scroll/accessibility, category input</td>
+</tr>
+<tr>
+<td>Clinical/food policy</td>
+<td>Safety mode, rule version, nutrients, observations/actions</td>
+<td>Capture explicit answers and food confirmations; render result</td>
+</tr>
+<tr>
+<td>Recognition</td>
+<td>Normalise/scan image, private provider request, catalogue candidates</td>
+<td>Camera/gallery permissions and progress/cancellation</td>
+</tr>
+<tr>
+<td>History</td>
+<td>Immutable completed snapshots and linked revisions</td>
+<td>List/detail, read-only after expiry</td>
+</tr>
+<tr>
+<td>Commercial route</td>
+<td>Typed destination and resolved state; atomic checkout guard in existing service</td>
+<td>Navigate to permitted existing route; preserve origin</td>
+</tr>
+</tbody>
+</table>
+<p>New text/order/category data within supported blocks should require configuration publication, not app rebuilds. New block types or interactions require mobile capability support. The backend must NOT transmit arbitrary executable code or unrestricted HTML.</p>
+<h2>2. Independent identities and versions</h2>
+<p><code>profileId</code>: authorised patient context; not a phone-number proxy.<br/>
+<code>previewCategoryId</code>: educational browsing preference only; nullable; not stored as a diagnosis.<br/>
+<code>contentBundleVersion</code>, <code>previewContentVersion</code>: approved public/educational release.<br/>
+<code>analysisPolicyId</code>: fixed general policy for free real checks; never taken from a preview request.<br/>
+<code>ruleVersion</code>, <code>foodCatalogueVersion</code>, <code>templateVersion</code>: frozen for a reproducible attempt.<br/>
+<code>safetyAnswerRevision</code>, <code>safetyPolicyVersion</code>, <code>consentVersion</code>: independently tracked and checked before result commit.<br/>
+<code>attemptId</code>, <code>attemptRevision</code>, <code>resultId</code>, <code>sourceResultId</code>: actual work and immutable history.<br/>
+<code>requestContextId</code>: binds profile and UI request generation to discard late responses.</p>
+<p>A server response can advertise both activities, but content and calculation objects must remain separate. Do not reuse the prototype <code>frxRulesFor()</code> to assign a preview choice to real analysis. Do not match disease/programme names by string fragments in production. Six preview IDs are not six enrolled programmes.</p>
+<h2>3. Proposed endpoints and responsibilities</h2>
+<p>All profile routes require authenticated authorisation on every request. Body profile IDs do not override the authorised path/session context. Use existing naming conventions where equivalent endpoints exist.</p>
+<table>
+<thead>
+<tr>
+<th>Operation / suggested route</th>
+<th>Input</th>
+<th>Output / decisive behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET <code>/profiles/{p}/meal-check/context</code></td>
+<td>Supported schema/block versions</td>
+<td>Server time; free/paid context; booleans + reason codes; content manifest; action descriptors</td>
+</tr>
+<tr>
+<td>GET <code>/meal-check/previews/{categoryId}</code></td>
+<td>Locale, supported schema, optional ETag</td>
+<td>One complete approved preview; no health record or meal result</td>
+</tr>
+<tr>
+<td>PUT <code>/profiles/{p}/meal-check/preview-preference</code></td>
+<td>One valid category ID + revision</td>
+<td>Browsing preference only; optional, omit if not needed</td>
+</tr>
+<tr>
+<td>GET/PUT <code>/profiles/{p}/meal-check/safeguards</code></td>
+<td>Explicit questionnaire answers, revision</td>
+<td>Protected answers/revision; server derives safety mode</td>
+</tr>
+<tr>
+<td>POST <code>/profiles/{p}/meal-check/attempts</code></td>
+<td>Source, mealSlot, optional sourceResultId; Idempotency-Key</td>
+<td>Trusted attempt, revision, expiry, frozen rule/catalogue/consent references</td>
+</tr>
+<tr>
+<td>POST <code>/.../attempts/{a}/image</code></td>
+<td>Private upload descriptor/reference</td>
+<td>Validated transient upload; exact source-type/content checks</td>
+</tr>
+<tr>
+<td>POST <code>/.../attempts/{a}/recognise</code></td>
+<td>Attempt revision; Idempotency-Key</td>
+<td>Recognition job/status; candidate foods/portions/confidence; no authoritative nutrients</td>
+</tr>
+<tr>
+<td>GET <code>/.../attempts/{a}</code></td>
+<td>Authorised profile</td>
+<td>Status, revision, deadline, recoverable input; never another profile's data</td>
+</tr>
+<tr>
+<td>GET <code>/meal-check/foods</code></td>
+<td>Search, preparation, catalogue version, pagination</td>
+<td>Approved catalogue selections and supported portions</td>
+</tr>
+<tr>
+<td>PATCH <code>/.../attempts/{a}/items</code></td>
+<td>Mapped IDs, preparation, quantities, revision</td>
+<td>Updated draft; any old confirmation invalidated</td>
+</tr>
+<tr>
+<td>POST <code>/.../attempts/{a}/confirm</code></td>
+<td>Explicit confirmation, expected revision, safeguards/consent revision</td>
+<td>Server validates mappings and safety; returns confirmed revision</td>
+</tr>
+<tr>
+<td>POST <code>/.../attempts/{a}/complete</code></td>
+<td>Confirmed revision, Idempotency-Key</td>
+<td>Atomic finalisation or typed rejection; already completed returns same result</td>
+</tr>
+<tr>
+<td>POST <code>/.../attempts/{a}/cancel</code></td>
+<td>Expected revision</td>
+<td>Cancel work, no history, start cleanup; late workers may not persist results</td>
+</tr>
+<tr>
+<td>GET <code>/profiles/{p}/meal-check/results</code></td>
+<td>Cursor, date filter</td>
+<td>Completed personal records only, original dates and display snapshots</td>
+</tr>
+<tr>
+<td>GET <code>/profiles/{p}/meal-check/results/{r}</code></td>
+<td>Authorised profile</td>
+<td>Immutable recorded input/output/version snapshot; no fresh scoring</td>
+</tr>
+<tr>
+<td>POST <code>/profiles/{p}/care-actions/resolve</code></td>
+<td>Origin, optional previewCategoryId, allowed destination hint</td>
+<td>Active/pending/available/unavailable action; not a checkout override</td>
+</tr>
+</tbody>
+</table>
+<p>Request-schema denylist is not enough: use an allowlist and reject unknown override fields such as <code>ruleId</code>, <code>diseaseMode</code>, <code>safetyMode</code>, client nutrient totals, approved entitlement or client expiry. A calculation request does not accept <code>previewCategoryId</code> at all. Persist analytics origin separately from the calculation inputs only when privacy-approved.</p>
+<h2>4. Configuration contract and safe rendering</h2>
+<p>Supported MVP blocks: <code>header</code>, <code>notice</code>, <code>nutrient_topics</code>, <code>topic_list</code>, <code>targets_explainer</code>, <code>care_benefits</code>, <code>action_group</code>. A profile can omit optional blocks but must retain the mode label and critical context. Resolve six categories through explicit IDs; the sample catalogue has production disabled.</p>
+<p>Draft → Medical/content review → Product/commercial review → Published → Retired/Revoked. Approval records include actor, timestamp, scope, language, validity, content hash and replacement/revocation reason. Publishing checks that every required block/copy/destination exists. Rollback must select a still-approved coherent version, not an arbitrary old cache.</p>
+<p>Clients advertise supported schema and block types. If a required block/type/schema is unsupported, show a neutral unavailable/update state; do not drop a required warning and render the rest. Unknown optional decorative blocks may be omitted only if the manifest explicitly marks them nonessential. No raw HTML/script/remote event handlers. Destinations must be typed allowlisted app routes.</p>
+<p>Preview content may use an approved still-valid cache. A revoked version is ineligible. If revocation status cannot be verified, serve no new preview as approved; keep history and other permitted actions available. The exact offline validity window is a publishing policy requiring owner sign-off, not an invented client constant. Cache keys include locale, category, schema and version; private responses additionally include profile. Do not mix versions on a page.</p>
+<h2>5. Attempt state machine</h2>
+<p><code>DRAFT → RECOGNISING (image only) → NEEDS_CONFIRMATION → CONFIRMED → CALCULATING → COMPLETED</code>. Manual input skips RECOGNISING. User edits return to NEEDS_CONFIRMATION. Terminal exits: CANCELLED, FAILED, EXPIRED. Recoverable error metadata may accompany a nonterminal state while the original deadline remains valid.</p>
+<p>New attempt eligibility = authenticated/authorised adult + ACTIVE central free programme + serverNow &lt; programmeEndsAt. Creation is one trusted transaction. Store creation timestamp and <code>expiresAt = createdAt + 60 minutes</code>.</p>
+<p>Completion checks ALL of: valid ownership/current account permission; attempt created during valid free eligibility; open nonterminal attempt; serverNow &lt;= expiresAt; confirmed current revision; acceptable current safeguards/consent; rule/catalogue not revoked; required mapping completeness. Do not OR in current free eligibility as an alternative to the deadline. Inclusive equality follows S01; changing it needs an explicit policy revision.</p>
+<p>The final commit must still satisfy the deadline. A job started before expiry but finishing afterward cannot silently save. A safety/consent change during calculation blocks commit and returns an explicit re-confirmation requirement within the remaining deadline, otherwise a new attempt. Hold the expected revision through finalisation so concurrent edits/cancel cannot race a save.</p>
+<p>An already COMPLETED request replays the stored result without new calculation after verifying access; a changed request under the same idempotency key is a conflict. A cancelled/expired result worker cannot re-open an attempt. Retries and request keys are scoped to profile + operation + canonical request hash. Do not create a new daily quota.</p>
+<p>A free attempt validly created before purchase may complete under the same free authorisation/deadline if account access remains valid; this does not grant paid meal access or a new attempt. Any paid policy that explicitly invalidates such drafts takes precedence and must return a reason rather than silently switching scoring profiles. New paid attempts remain outside this release.</p>
+<h2>6. Recognition, data and reproducibility</h2>
+<p>Carry forward S01 image rules, catalogue provenance, confidence bands, mandatory confirmation and nutrition logic in <code>06_Calculation_Contract_v2.0.md</code>. Recognition proposes foods/portions/preparation only; server-approved catalogue values produce nutrient totals. Treat missing/malformed confidence as LOW. Nutrient data from a model is not a permitted calculation source.</p>
+<p>All real calculations use the fixed free policy. No preview-selected CKD targets, weight fallback, programme-string selection or prototype model-generated nutrients. The backend returns formatted rows, reason codes, verdict and approved actions from the same rule version. Mobile does not derive any of these.</p>
+<p>Freeze catalogue and numeric versions on the attempt so mapping cannot drift; recheck revocation before commit. Store exact user-approved items, quantities, versions, normalized scoring totals, display snapshot, safety mode and immutable original result. Store enough provenance to reproduce the record without re-running image recognition. Historical edits create linked drafts; no silent overwrite or recalculation.</p>
+<p>Facts-only means totals and limitations only: no numeric targets, traffic-light judgement, suitability vocabulary, suggestions or glucose impact. Completeness still matters: do not fill absent nutrient values with zero. The clinical/data owner must approve the minimum computable facts dataset; absent approval or required fields yields no result, not an inferred safe result.</p>
+<h2>7. Responses and errors</h2>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Required mobile behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FREE_NOT_STARTED</code></td>
+<td>Existing activation route; no local timer start</td>
+</tr>
+<tr>
+<td><code>FREE_EXPIRED</code></td>
+<td>New analysis locked; history/previews accessible under their policies</td>
+</tr>
+<tr>
+<td><code>ATTEMPT_EXPIRED</code></td>
+<td>Explain this check timed out; create a fresh one only if newly eligible</td>
+</tr>
+<tr>
+<td><code>ACCOUNT_INELIGIBLE</code> / <code>PROFILE_FORBIDDEN</code></td>
+<td>No analysis or private data; account/support route</td>
+</tr>
+<tr>
+<td><code>SAFEGUARDS_REQUIRED</code> / <code>CONSENT_REQUIRED</code></td>
+<td>Capture/confirm explicit information; no result yet</td>
+</tr>
+<tr>
+<td><code>REVISION_CONFLICT</code></td>
+<td>Fetch current draft and explain; never overwrite concurrent changes</td>
+</tr>
+<tr>
+<td><code>FOOD_MAPPING_REQUIRED</code> / <code>NUTRIENT_DATA_MISSING</code></td>
+<td>Edit/replace/remove or stop; no invented facts</td>
+</tr>
+<tr>
+<td><code>IMAGE_INVALID</code> / <code>NOT_FOOD</code> / <code>AMBIGUOUS_MEAL</code></td>
+<td>Retake, gallery or manual entry; retain permitted draft</td>
+</tr>
+<tr>
+<td><code>SERVICE_UNAVAILABLE</code></td>
+<td>Retry/cancel within original deadline; no sample meal</td>
+</tr>
+<tr>
+<td><code>PREVIEW_UNAVAILABLE</code> / <code>SCHEMA_UNSUPPORTED</code></td>
+<td>No partial/unrelated preview; show other valid choices/return</td>
+</tr>
+<tr>
+<td><code>ORDER_PENDING</code></td>
+<td>Track existing activation/order, no additional base checkout</td>
+</tr>
+<tr>
+<td><code>POLICY_REVOKED</code></td>
+<td>Stop new/finalised use of the revoked version; explicit explanation</td>
+</tr>
+</tbody>
+</table>
+<p>Use project-standard HTTP conventions; proposed mapping is 403 ownership/eligibility, 409 revision/state conflicts, 410 expired draft, 422 field/content validation and 503 service unavailability. Result JSON retains typed codes, not only human-readable text.</p>
+<h2>8. Commercial actions</h2>
+<p>Resolve against authoritative selected-profile paid/order state at display and action time. An active paid user remains in existing paid care even with an unresolved renewal. Pending new order replaces all purchase origins with Track activation. Cancellation request alone does not release the lock. Terminal cancellation/refund re-resolves; payment does not renew free access. Only catalogue-confirmed benefits are presented, and there is no inference that a preview category necessarily has a live plan.</p>
+<h2>9. Security, privacy and observability</h2>
+<p>Authenticated APIs and object-level checks for every attempt/result; private, short-lived upload grants; MIME/byte/size/orientation checks; EXIF/location removal; approved malware/security pipeline. Client contains no provider credentials. Model prompts carry necessary image/note only, not diagnosis, name, age, phone, other health records or browsing interest. Content read logs must not turn a browsing category into a diagnosis.</p>
+<p>Retain proposed S01 deletion: &lt;=15 min after terminal success/cancel/failure; abandoned storage hard TTL &lt;=24 h; client cache cleared on terminal action/next launch. Delete consistently in queues, temp files and storage; get provider retention terms approved. These are proposed product periods, not legal compliance certification.</p>
+<p>Product telemetry uses mode, generic success/failure and timing only. Treat care-interest IDs as sensitive health-interest information: do not send them or food/medical/safeguard content to general analytics without explicit privacy approval. No raw images, food names, nutrient values, notes or diagnoses in logs. Use opaque correlation IDs for debugging. Audit protected content approvals, access failures, rule versions and finalisations.</p>
+<h2>10. Release controls and future paid extension</h2>
+<p>Separate flags for preview publication, new real attempts, general guidance, estimated glucose impact and future paid clinical analysis. Keep future condition-specific actual analysis unavailable in v2.0; a flag is not clinical approval. Existing reference profile values require recorded Medical approval. Paid extension can reuse typed blocks, food mapping, inputs, history and service interfaces; its clinical assessment, multi-condition resolution, personal targets and staffed service are separate work.</p>
+</article></div></body></html>

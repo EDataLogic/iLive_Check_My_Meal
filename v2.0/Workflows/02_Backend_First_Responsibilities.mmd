@@ -1,0 +1,14 @@
+flowchart LR
+ UI[React Native: typed blocks and input] --> C[Context and profile authorisation]
+ C --> P[Approved preview publication]
+ P --> UI
+ C --> A[Bounded attempts and revisions]
+ A --> V[Recognition: candidates only]
+ V --> A
+ A --> F[Governed food catalogue]
+ F --> E[General policy and safeguards]
+ A --> E
+ E --> H[Immutable results]
+ H --> UI
+ C --> B[Existing commercial resolver]
+ B --> UI

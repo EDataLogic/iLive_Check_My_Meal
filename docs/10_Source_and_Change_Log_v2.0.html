@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="noindex,nofollow,noarchive" name="robots"/><title>Sources &amp; change log — Check My Meal v2.0</title><link href="../portal.css" rel="stylesheet"/></head><body><div class="wrap"><div class="top"><a class="brand" href="../index.html">iLive / Reference hub</a><span class="badge">Product baseline v2.0</span></div><p class="small">Browser rendering of the unchanged source document. This is a proposed handoff, not production or clinical approval.</p><a download="" href="../v2.0/10_Source_and_Change_Log_v2.0.md">Download original Markdown</a><article class="doc"><h1>Source register and change log — v2.0</h1>
+<p><strong>24 September 2026. Source review and design proposal; not clinical validation.</strong></p>
+<h2>Sources</h2>
+<ul>
+<li><strong>S01</strong> <code>ILive_Free_Check_My_Meal_MVP_Git_Issue.md</code>, recovered earlier issue, 1,369 lines. Preserved unchanged under <code>Reference_ONLY</code>. Provides the general free analysis, catalogue, safety, history and privacy baseline.</li>
+<li><strong>S02</strong> <code>iLive-Updated-Prototype-Tech-Handover-v1.0 (1).zip</code>, source member <code>iLive-Updated-Prototype-Tech-Handover-v1.0/01-prototype-source/ILiveConnect.jsx</code>. Archive SHA-256 <code>f346bb11ea7771632c1ce3a6a315f74fc8e40a0264698096e0eb231588a95ee5</code>, checked against supplied checksum. Source lines 393–554 define six meal profiles and selection; 556–574 derive targets; 651–745 contain analysis/ranking/suggestions; 6687–6693 reads programme/condition context; 7101–7171 renders opening cards; 7279 onward is the separate Diet module.</li>
+<li><strong>S03</strong> <code>iLive_Free_Home_Consistency_Review_v1.0_2026-09-23.zip</code>, Check My Meal addendum and shared-state contract. Proposed fixes for attempt deadline, precision, cross-origin CTA and mock coverage.</li>
+<li><strong>S04</strong> <code>iLive_Free_Home_Configurable_Care_Programme_Discovery_MVP_Feature_v1.1.md</code>, FR-07–11. Provides price/benefit authority, profile/order priority, no overlapping checkout, payment/readiness distinction.</li>
+<li><strong>S05</strong> User's current discussion: category-specific educational previews, real-meal checking separate, backend-first configurability, Check My Meal only, Your Diet later.</li>
+</ul>
+<p>Sources with statements labelled “approved” were requirements, not evidence of a recorded sign-off. Live GitHub issue state/comments and current production APIs remain unverified. Connected repository listing returned no accessible repositories; no write was attempted against an unidentified issue.</p>
+<h2>Explicit changes (proposal, not silent source correction)</h2>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Source behaviour</th>
+<th>Proposed v2.0 disposition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Two activities</td>
+<td>S01 general real checks only; S02 automatic conditional rules</td>
+<td>Your meals + optional Explore care, explicitly separated</td>
+</tr>
+<tr>
+<td>Categories</td>
+<td>S02 programme/condition selection affects analysis</td>
+<td>Six draft preview profiles; selection is browsing only</td>
+</tr>
+<tr>
+<td>Condition logic</td>
+<td>S02 string matching, weight defaults, combined precedence</td>
+<td>Not ported to free actual analysis</td>
+</tr>
+<tr>
+<td>Preview sections</td>
+<td>S02 personal-sounding headers, warnings, longevity claims</td>
+<td>Category-labelled educational content with Medical approval</td>
+</tr>
+<tr>
+<td>Numeric budgets</td>
+<td>S02 daily kcal and remaining balance</td>
+<td>Removed from free preview and actual hub</td>
+</tr>
+<tr>
+<td>Meal limits</td>
+<td>Earlier generated art introduced one meal/day</td>
+<td>Discard; S01 no invented daily quota retained</td>
+</tr>
+<tr>
+<td>Safety mode</td>
+<td>S01 facts-only suppression partly implicit</td>
+<td>Explicit suppression of comparisons, verdicts, suggestions and glucose impact</td>
+</tr>
+<tr>
+<td>Attempt expiry</td>
+<td>S01 entitlement-OR ambiguity vs 60-minute limit</td>
+<td>S03 correction: every draft must satisfy its original deadline</td>
+</tr>
+<tr>
+<td>Precision</td>
+<td>S01 scoring normalisation then “Round only for display”</td>
+<td>S03 correction: one scoring-normalised copy, separate UI formatting</td>
+</tr>
+<tr>
+<td>Food terminology</td>
+<td>S02 added sugar/salt; S01 free sugar/sodium</td>
+<td>Proposed label harmonisation explicitly marked for approval</td>
+</tr>
+<tr>
+<td>Care CTA</td>
+<td>S01 general plan link</td>
+<td>S04 profile/order-aware resolver across every origin</td>
+</tr>
+<tr>
+<td>Mocks</td>
+<td>S01 limited interaction states; prior generated infographics inconsistent</td>
+<td>Versioned precise HTML, individual PNGs and annotated PDF from one state dataset</td>
+</tr>
+<tr>
+<td>Future reuse</td>
+<td>Condition-specific paid analysis not defined</td>
+<td>Reuse UI/data primitives only; clinical service and approval remain separate</td>
+</tr>
+</tbody>
+</table>
+<h2>Supersession</h2>
+<p>When accepted, v2.0 replaces the earlier Check My Meal issue and its mock reference, not the entire six-card review. Retain original issue identity/history. The two unversioned/generated infographic images are non-authoritative and are not included as current mocks. Never import their invented daily quota, personal calorie balance, automatic care-mode scoring or unsupported benefits into implementation.</p>
+<h2>Validation limits</h2>
+<p>This pack verifies source identity, file readability, mock generation, selected UI navigation and artifact consistency. It does not verify production code, execute API integration tests, certify nutrient accuracy or obtain clinical/commercial approvals. QA scenarios are proposed until implemented and run by the team.</p>
+</article></div></body></html>

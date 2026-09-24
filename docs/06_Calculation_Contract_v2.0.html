@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="noindex,nofollow,noarchive" name="robots"/><title>General meal calculation contract — Check My Meal v2.0</title><link href="../portal.css" rel="stylesheet"/></head><body><div class="wrap"><div class="top"><a class="brand" href="../index.html">iLive / Reference hub</a><span class="badge">Product baseline v2.0</span></div><p class="small">Browser rendering of the unchanged source document. This is a proposed handoff, not production or clinical approval.</p><a download="" href="../v2.0/06_Calculation_Contract_v2.0.md">Download original Markdown</a><article class="doc"><h1>Retained actual-meal calculation contract — v2.0</h1>
+<p><strong>Source:</strong> S01, previous <code>ILive_Free_Check_My_Meal_MVP_Git_Issue.md</code>, sections 10–19. Original section numbering is retained for traceability. This is inherited proposed clinical behaviour, NOT independent medical validation.</p>
+<p><strong>Scope:</strong> actual free-user meal checking only. Category preview content never selects these rules. Publication of preview content does not authorise any real calculation. All source medical/data release gates still apply. No paid condition-specific formulas are enabled.</p>
+<p><strong>Explicit v2.0 changes:</strong> resolve the contradictory “Round only for display” wording in favour of the source's explicit one-time scoring normalisation; explicitly suppress all comparisons and glucose-impact output in facts-only mode. The source thresholds, general reference amounts, ranking and test examples are otherwise retained unchanged. Source references to “approved” mean approval is required, not that an approver has signed this pack.</p>
+<p><strong>Important:</strong> the source glucose-impact heuristic remains feature-disabled until the exact formula, wording and vectors are approved. This package does not validate it or present it in the mocks. User-specific nutrition advice, medication dosing and disease-specific targets are outside this revision.</p>
+<hr/>
+<h2>10. Mandatory safety and preference gate</h2>
+<p>This is a short first-use guardrail for meal guidance. It is <strong>not</strong> the detailed heart assessment and does not change the numeric rule targets.</p>
+<h3>10.1 Required fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Allowed values</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Diet preference</td>
+<td>Vegetarian / Eggetarian / Non-vegetarian / Vegan</td>
+<td>Filter any specific add/swap candidate</td>
+</tr>
+<tr>
+<td>Allergies/intolerances</td>
+<td>Nuts / Milk / Egg / Soy / Gluten / Seafood / Other / None</td>
+<td>Suppress conflicting suggestions; user must explicitly select <code>None</code> if applicable</td>
+</tr>
+<tr>
+<td>Kidney disease or dialysis</td>
+<td>Yes / No / Not sure</td>
+<td>Determines whether general recommendations may be shown</td>
+</tr>
+<tr>
+<td>Insulin or sulfonylurea medicine</td>
+<td>Yes / No / Not sure</td>
+<td>Applies the carbohydrate-reduction guard below</td>
+</tr>
+<tr>
+<td>Clinician-prescribed special diet or medical nutrition requirement</td>
+<td>Yes / No / Not sure</td>
+<td>Determines whether general recommendations may be shown</td>
+</tr>
+<tr>
+<td>Pregnancy or breastfeeding status</td>
+<td>Yes / No / Not applicable / Prefer not to say</td>
+<td>Prevents generic advice from appearing as pregnancy-specific nutrition guidance</td>
+</tr>
+</tbody>
+</table>
+<h3>10.2 Safety modes</h3>
+<pre><code class="language-text">FACTS_ONLY if:
+    kidneyOrDialysis IN {YES, NOT_SURE}
+    OR prescribedSpecialDiet IN {YES, NOT_SURE}
+    OR pregnancyOrBreastfeeding IN {YES, PREFER_NOT_TO_SAY}
+
+GENERAL_GUIDANCE otherwise
+</code></pre>
+<h4><code>FACTS_ONLY</code></h4>
+<ul>
+<li>Show confirmed foods, estimated nutrient totals and the disclaimer.</li>
+<li>Do not show green/amber/red overall suitability language.</li>
+<li>Do not show reduce/add/swap recommendations.</li>
+<li>Do not show “tomorrow's experiment.”</li>
+<li>[v2.0 explicit suppression] Do not show target comparisons or estimated glucose-impact outputs in FACTS_ONLY mode.</li>
+<li>Explain that general suggestions may not fit a prescribed or kidney-related diet and recommend following the user's clinician/dietitian.</li>
+</ul>
+<h4><code>GENERAL_GUIDANCE</code></h4>
+<ul>
+<li>Apply the nutrient-row, verdict and guidance rules in this issue.</li>
+<li>Filter specific suggestions using diet preference and allergies.</li>
+</ul>
+<h4>Insulin/sulfonylurea guard</h4>
+<p>If <code>insulinOrSulfonylurea</code> is <code>YES</code> or <code>NOT_SURE</code>:</p>
+<ul>
+<li>Do not recommend reducing a breakfast, lunch or dinner below 30 g of total carbohydrate.</li>
+<li>Do not recommend skipping a meal.</li>
+<li>Show: “If you use glucose-lowering medicine, discuss major carbohydrate changes with your care team.”</li>
+</ul>
+<h3>10.3 Guardrail behaviour</h3>
+<ul>
+<li>These answers do not select diabetes, CKD, cardiac-recovery or hypertension formulas.</li>
+<li>They do not modify the numeric meal targets.</li>
+<li>If preferences are later changed, historical results are not silently rewritten.</li>
+<li>Preferences are editable from <strong>Check My Meal → Information → Food preferences and guidance safeguards</strong>.</li>
+<li>Changing an answer during an incomplete attempt invalidates any provisional result and re-evaluates the safety mode before calculation. Completed history remains unchanged.</li>
+<li>Consent is accepted again only when the consent version changes; a version change is shown before the next new attempt and never rewrites history.</li>
+<li>If a proposed specific addition conflicts with a preference or allergy, it must be removed from the candidate list.</li>
+<li>If no safe candidate remains, show nutrient-level guidance without naming a food.</li>
+<li><code>Other</code> allergy/intolerance may contain up to 100 characters. Store it with the protected preference profile; never send it to the recognition provider or general analytics.</li>
+<li>Preference/allergy filtering reduces obvious conflicts but does not certify a food, brand or recipe as allergen-free. Suggestions must say: “Check ingredients and follow any allergy advice given by your clinician.”</li>
+</ul>
+<hr/>
+<h2>11. Input and image requirements</h2>
+<h3>11.1 Supported routes</h3>
+<ul>
+<li>Take one new meal photograph.</li>
+<li>Select one meal image from the gallery.</li>
+<li>Enter foods manually from the approved searchable catalogue.</li>
+</ul>
+<h3>11.2 File rules</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>MVP rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Accepted original types</td>
+<td>JPG/JPEG, PNG, HEIC/HEIF</td>
+</tr>
+<tr>
+<td>Quantity</td>
+<td>One still image per analysis</td>
+</tr>
+<tr>
+<td>Maximum original size</td>
+<td>10 MB; configuration-controlled</td>
+</tr>
+<tr>
+<td>Not accepted</td>
+<td>PDF, GIF, video, document or renamed non-image file</td>
+</tr>
+<tr>
+<td>Validation</td>
+<td>Inspect actual file bytes; do not trust extension/client MIME only</td>
+</tr>
+<tr>
+<td>Normalisation</td>
+<td>Correct orientation; convert unsupported analysis format; strip EXIF/location metadata</td>
+</tr>
+<tr>
+<td>Meal scope</td>
+<td>One primary plate/meal per check; ambiguous multiple meals require user selection</td>
+</tr>
+<tr>
+<td>Optional note</td>
+<td>Maximum 250 characters; may help candidate recognition/search only; never authoritative and deleted with the attempt image</td>
+</tr>
+</tbody>
+</table>
+<h3>11.3 Image-recognition contract</h3>
+<p>Recognition may return:</p>
+<ul>
+<li><code>foodCandidate</code></li>
+<li><code>preparationCandidate</code></li>
+<li>estimated household measure/grams</li>
+<li>item-level confidence</li>
+<li><code>food</code>, <code>not_food</code>, <code>unreadable</code> or <code>ambiguous</code> status</li>
+</ul>
+<p>Item-confidence bands for <code>FREE_HEART_HEALTH_MEAL_V1</code> are versioned as:</p>
+<pre><code class="language-text">HIGH   = confidence &gt;= 0.85
+MEDIUM = confidence &gt;= 0.60 AND confidence &lt; 0.85
+LOW    = confidence &lt; 0.60
+</code></pre>
+<ul>
+<li>All bands require user confirmation.</li>
+<li><code>MEDIUM</code> items are visually highlighted and require an explicit confirm/edit action.</li>
+<li><code>LOW</code> items cannot be accepted as-is; the user must search and select a catalogue item, replace it or remove it.</li>
+<li>If the provider does not return a valid finite value from <code>0</code> to <code>1</code>, treat the item as <code>LOW</code>.</li>
+</ul>
+<p>Recognition must <strong>not</strong> return or determine:</p>
+<ul>
+<li>authoritative nutrient values,</li>
+<li>the nutrient-row statuses,</li>
+<li>overall green/amber/red verdict,</li>
+<li>estimated glucose-impact category,</li>
+<li>a clinical condition profile,</li>
+<li>medical recommendations.</li>
+</ul>
+<h3>11.4 Production rules</h3>
+<ul>
+<li>Provider credentials must never be present in the mobile application.</li>
+<li>Image interpretation is completed through the authenticated iLive service boundary.</li>
+<li>Food identity and portion candidates are mapped to the approved food catalogue before calculation.</li>
+<li>Nutrients supplied by a vision/LLM response must be ignored.</li>
+<li>A photo result always proceeds to mandatory confirmation, including high-confidence recognition.</li>
+<li>The system must never create nutrients or a verdict from a default/typical meal after failure.</li>
+</ul>
+<hr/>
+<h2>12. Mandatory confirmation and catalogue mapping</h2>
+<h3>12.1 User capabilities</h3>
+<p>Before calculation, the user must be able to:</p>
+<ul>
+<li>Edit an identified food.</li>
+<li>Change its preparation/cooking method where nutritionally relevant.</li>
+<li>Change household measure and/or portion.</li>
+<li>Remove an incorrectly identified item.</li>
+<li>Add a missing item.</li>
+<li>Retake or replace the image.</li>
+<li>Change the meal slot.</li>
+<li>Cancel without creating history.</li>
+</ul>
+<h3>12.2 Calculation prerequisites</h3>
+<p>Every confirmed food item, including beverages, sauces, oils, salt and accompaniments, must have:</p>
+<ul>
+<li>approved catalogue food/preparation identifier,</li>
+<li>reference quantity,</li>
+<li>confirmed quantity greater than zero,</li>
+<li>energy,</li>
+<li>carbohydrate,</li>
+<li>protein,</li>
+<li>total fat,</li>
+<li>saturated fat,</li>
+<li>fibre,</li>
+<li>free sugar,</li>
+<li>sodium,</li>
+<li>refined/high-GI classification when glucose impact will be displayed.</li>
+</ul>
+<p>If any verdict-driving nutrient is unavailable for a confirmed item, the system must not show a green/amber/red result. The user must replace the mapping, remove the item explicitly, or stop the check. Missing values must never default to zero.</p>
+<h3>12.3 Validation</h3>
+<p>The user cannot continue when:</p>
+<ul>
+<li>no meal slot is selected,</li>
+<li>no food remains,</li>
+<li>an item is unresolved,</li>
+<li>a required portion is missing or zero,</li>
+<li>a relevant preparation is unresolved,</li>
+<li>an item lacks the required approved nutrient mapping,</li>
+<li>the user has not reconfirmed after an edit.</li>
+</ul>
+<hr/>
+<h2>13. Approved food-data and nutrient calculation contract</h2>
+<p>The production contract is <strong><code>ILIVE_FOOD_CATALOGUE_V1</code></strong>, owned and released by iLive Clinical Nutrition/Data. It is seeded from the licensed/approved <strong>Indian Food Composition Tables 2017</strong> data and supplemented only by governed iLive recipe and packaged-food records. Engineering must not substitute LLM-generated values or an unversioned public lookup.</p>
+<p>Before release, <code>ILIVE_FOOD_CATALOGUE_V1</code> must contain:</p>
+<ul>
+<li>stable food/preparation codes and catalogue version;</li>
+<li>nutrient values per 100 g edible portion as consumed;</li>
+<li>edible-portion factors where entered weight includes non-edible material;</li>
+<li>cooked-yield/retention mappings for preparation methods;</li>
+<li>governed composite-recipe ingredient weights and final cooked yield;</li>
+<li>household-measure-to-gram mappings with versioned supported portion steps;</li>
+<li>curated synonyms for Indian dishes and regional names;</li>
+<li>governed <code>refinedHighGi</code> metadata used only by Section 17;</li>
+<li>canonical <code>freeSugarG</code> data or governed recipe derivation;</li>
+<li>packaged/brand records only when label data and serving basis have been verified.</li>
+</ul>
+<p>If a brand/preparation is not verified, the user must explicitly choose a governed generic equivalent; it must not be silently substituted. Catalogue ownership, approval workflow and publishing are release dependencies, not mobile-team decisions.</p>
+<h3>13.1 Item calculation</h3>
+<p>For each nutrient <code>n</code> in a confirmed food item:</p>
+<pre><code class="language-text">itemAmount[n] = catalogueAmount[n] × confirmedQuantity / catalogueReferenceQuantity
+</code></pre>
+<h3>13.2 Meal calculation</h3>
+<pre><code class="language-text">mealTotal[n] = SUM(itemAmount[n] for every confirmed item)
+</code></pre>
+<p>Required totals:</p>
+<ul>
+<li>energy, kcal,</li>
+<li>carbohydrate, g,</li>
+<li>protein, g,</li>
+<li>total fat, g,</li>
+<li>saturated fat, g,</li>
+<li>fibre, g,</li>
+<li>free sugar, g,</li>
+<li>sodium, mg.</li>
+</ul>
+<h3>13.3 Calculation rules</h3>
+<ul>
+<li>Map household measures such as roti, cup or katori to governed quantities.</li>
+<li>Use the user's final confirmed quantity, not the original vision estimate.</li>
+<li>Canonical <code>freeSugarG</code> means sugars added during manufacture/cooking plus sugars naturally present in honey, syrups, fruit juices and fruit-juice concentrates. It excludes sugars naturally present inside intact fruit/vegetables and lactose naturally present in milk.</li>
+<li><code>freeSugarG</code> is already included within total carbohydrate. Do not add it to carbohydrate totals again.</li>
+<li>Derive recipe free sugar from governed ingredient/recipe metadata. Do not substitute total sugar or assume missing free sugar is zero.</li>
+<li>If required <code>freeSugarG</code> data is unavailable, the result is not calculable for this MVP.</li>
+<li>Use decimal precision for item/meal calculations. Before threshold comparison, normalise energy to the nearest 1 kcal, sodium to the nearest 1 mg and gram-based nutrients to the nearest 0.1 g, using half-up rounding. Apply the strict comparisons in Section 15 to these normalised values; no additional tolerance is implied.</li>
+<li>After the explicit scoring normalisation above, format a separate display copy. Do not round intermediate item contributions or use rounded UI targets for scoring. [v2.0 precision clarification; numeric thresholds unchanged.]</li>
+<li>Suggested display rounding:
+<ul>
+<li>energy and sodium: nearest whole unit, half-up;</li>
+<li>grams: one decimal, half-up;</li>
+<li>targets on compact cards: nearest whole unit, half-up.</li>
+</ul>
+</li>
+<li>Equality with a threshold is not a breach because the rules use strict <code>&lt;</code> and <code>&gt;</code> comparisons.</li>
+<li>Same confirmed inputs + same catalogue version + same rule version must produce the same output.</li>
+</ul>
+<hr/>
+<h2>14. Rule profile: <code>FREE_HEART_HEALTH_MEAL_V1</code></h2>
+<p>This is a <strong>general reference profile</strong>, not a personal prescription.</p>
+<h3>14.1 Daily reference values</h3>
+<table>
+<thead>
+<tr>
+<th>Nutrient</th>
+<th style="text-align:right">Daily reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Energy</td>
+<td style="text-align:right">2,000 kcal</td>
+</tr>
+<tr>
+<td>Carbohydrate</td>
+<td style="text-align:right">250 g</td>
+</tr>
+<tr>
+<td>Protein</td>
+<td style="text-align:right">100 g</td>
+</tr>
+<tr>
+<td>Fibre</td>
+<td style="text-align:right">30 g</td>
+</tr>
+<tr>
+<td>Saturated fat</td>
+<td style="text-align:right">20 g maximum</td>
+</tr>
+<tr>
+<td>Free sugar</td>
+<td style="text-align:right">25 g maximum</td>
+</tr>
+<tr>
+<td>Sodium</td>
+<td style="text-align:right">2,000 mg maximum</td>
+</tr>
+</tbody>
+</table>
+<p>These values must be stored as versioned clinical/product configuration. A configuration change creates a new rule version; it must not rewrite historical results.</p>
+<h3>14.2 Default meal slot using <code>Asia/Kolkata</code></h3>
+<table>
+<thead>
+<tr>
+<th>Local time</th>
+<th>Suggested slot</th>
+<th style="text-align:right">Slot share</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>04:00–10:59</td>
+<td>Breakfast</td>
+<td style="text-align:right">25%</td>
+</tr>
+<tr>
+<td>11:00–14:59</td>
+<td>Lunch</td>
+<td style="text-align:right">35%</td>
+</tr>
+<tr>
+<td>15:00–18:59</td>
+<td>Snack</td>
+<td style="text-align:right">10%</td>
+</tr>
+<tr>
+<td>19:00–03:59</td>
+<td>Dinner</td>
+<td style="text-align:right">30%</td>
+</tr>
+</tbody>
+</table>
+<p>The slot is a suggestion only. The user must be able to change it before confirmation.</p>
+<h3>14.3 Carbohydrate reference ranges</h3>
+<table>
+<thead>
+<tr>
+<th>Slot</th>
+<th style="text-align:right">Lower</th>
+<th style="text-align:right">Upper</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Breakfast</td>
+<td style="text-align:right">30 g</td>
+<td style="text-align:right">45 g</td>
+</tr>
+<tr>
+<td>Lunch</td>
+<td style="text-align:right">45 g</td>
+<td style="text-align:right">65 g</td>
+</tr>
+<tr>
+<td>Snack</td>
+<td style="text-align:right">10 g</td>
+<td style="text-align:right">20 g</td>
+</tr>
+<tr>
+<td>Dinner</td>
+<td style="text-align:right">40 g</td>
+<td style="text-align:right">60 g</td>
+</tr>
+</tbody>
+</table>
+<h3>14.4 Target derivation</h3>
+<pre><code class="language-text">energyTarget       = 2000 × slotShare
+proteinTarget      = 100 × proteinShare
+fibreTarget        = MAX(3, 30 × slotShare)
+saturatedFatLimit  = 20 × slotShare
+freeSugarLimit     = 25 × slotShare
+sodiumLimit        = 2000 × slotShare
+</code></pre>
+<p>Protein share:</p>
+<pre><code class="language-text">Breakfast = 30%
+Lunch     = 30%
+Snack     = 10%
+Dinner    = 30%
+</code></pre>
+<h3>14.5 Derived targets</h3>
+<p>Target calculations use the unrounded values shown in parentheses. Actual meal totals are normalised for scoring as specified in Section 13; UI may show the rounded display values.</p>
+<table>
+<thead>
+<tr>
+<th>Slot</th>
+<th style="text-align:right">Energy</th>
+<th style="text-align:right">Protein</th>
+<th style="text-align:right">Fibre</th>
+<th style="text-align:right">Saturated fat</th>
+<th style="text-align:right">Free sugar</th>
+<th style="text-align:right">Sodium</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Breakfast</td>
+<td style="text-align:right">500 kcal</td>
+<td style="text-align:right">30 g</td>
+<td style="text-align:right">8 g (<code>7.5</code>)</td>
+<td style="text-align:right">5 g</td>
+<td style="text-align:right">6 g (<code>6.25</code>)</td>
+<td style="text-align:right">500 mg</td>
+</tr>
+<tr>
+<td>Lunch</td>
+<td style="text-align:right">700 kcal</td>
+<td style="text-align:right">30 g</td>
+<td style="text-align:right">11 g (<code>10.5</code>)</td>
+<td style="text-align:right">7 g</td>
+<td style="text-align:right">9 g (<code>8.75</code>)</td>
+<td style="text-align:right">700 mg</td>
+</tr>
+<tr>
+<td>Snack</td>
+<td style="text-align:right">200 kcal</td>
+<td style="text-align:right">10 g</td>
+<td style="text-align:right">3 g</td>
+<td style="text-align:right">2 g</td>
+<td style="text-align:right">3 g (<code>2.5</code>)</td>
+<td style="text-align:right">200 mg</td>
+</tr>
+<tr>
+<td>Dinner</td>
+<td style="text-align:right">600 kcal</td>
+<td style="text-align:right">30 g</td>
+<td style="text-align:right">9 g</td>
+<td style="text-align:right">6 g</td>
+<td style="text-align:right">8 g (<code>7.5</code>)</td>
+<td style="text-align:right">600 mg</td>
+</tr>
+</tbody>
+</table>
+<h3>14.6 Prototype discrepancy resolved</h3>
+<p>The supplied prototype allocates 35% of daily sodium to each main meal and 15% to snack, which totals 120% across breakfast, lunch, snack and dinner. It also floors snack saturated fat/free sugar at 3 g, causing the four slots to exceed the stated daily maxima. This issue supersedes both shortcuts: all three upper limits follow the 25% / 35% / 10% / 30% shares and total 100%.</p>
+<hr/>
+<h2>15. Nutrient-row status logic</h2>
+<p>Each scored row receives:</p>
+<pre><code class="language-text">0 = within this profile's reference
+1 = moderately outside the reference
+2 = materially outside the reference
+</code></pre>
+<h3>15.1 Upper-limit rows</h3>
+<p>Applied to energy, saturated fat, free sugar and sodium:</p>
+<pre><code class="language-text">severity = 2 if actual &gt; target × 1.40
+severity = 1 if actual &gt; target
+severity = 0 otherwise
+</code></pre>
+<h3>15.2 Lower-target rows</h3>
+<p>Applied to protein and fibre:</p>
+<pre><code class="language-text">severity = 2 if actual &lt; target × 0.60
+severity = 1 if actual &lt; target
+severity = 0 otherwise
+</code></pre>
+<h3>15.3 Carbohydrate row</h3>
+<pre><code class="language-text">severity = 2 if actual &gt; upper × 1.35
+severity = 1 if actual &gt; upper
+severity = 1 if slot IN {BREAKFAST, LUNCH, DINNER}
+                AND actual &lt; lower × 0.50
+severity = 0 otherwise
+</code></pre>
+<p>Notes:</p>
+<ul>
+<li>Snack is not penalised for carbohydrate below the lower reference.</li>
+<li>There is no generic red state for low carbohydrate in this MVP.</li>
+<li>The insulin/sulfonylurea guard in Section 10 applies to the recommendation engine separately.</li>
+<li>Total fat is calculated and used in glucose-impact estimation but has no traffic-light target in this profile.</li>
+</ul>
+<hr/>
+<h2>16. Overall meal verdict</h2>
+<p>Priority rows, in order:</p>
+<ol>
+<li>Saturated fat.</li>
+<li>Fibre.</li>
+<li>Free sugar.</li>
+<li>Sodium.</li>
+</ol>
+<pre><code class="language-text">severeCount        = COUNT(rows where severity == 2)
+moderateCount      = COUNT(rows where severity == 1)
+prioritySevere     = ANY(priority row where severity == 2)
+priorityModerate   = ANY(priority row where severity == 1)
+
+RED if:
+    prioritySevere
+    OR severeCount &gt;= 2
+
+AMBER if not RED and:
+    severeCount == 1
+    OR priorityModerate
+    OR moderateCount &gt;= 3
+
+GREEN otherwise
+</code></pre>
+<h3>16.1 User-facing labels</h3>
+<table>
+<thead>
+<tr>
+<th>Engine value</th>
+<th>UX label</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Green</td>
+<td><strong>Generally supports the heart-health meal targets</strong></td>
+</tr>
+<tr>
+<td>Amber</td>
+<td><strong>A few changes could improve this meal</strong></td>
+</tr>
+<tr>
+<td>Red</td>
+<td><strong>Several parts of this meal need attention</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Colour must never be the only signal. Display the text label and an accessible icon.</p>
+<p>A green outcome means only that the confirmed meal falls within this profile's rules. It does not mean “safe,” “doctor approved,” or appropriate for every condition.</p>
+<p>Under this supplied aggregation logic, an overall green result can coexist with one or two non-priority rows at severity <code>1</code>. UX must show those row observations and must not replace them with an “everything is ideal” message.</p>
+<hr/>
+<h2>17. Estimated glucose-impact calculation</h2>
+<p>This is a <strong>dimensionless composition score</strong> from the supplied business/clinical logic. It is not a glucose measurement, predicted glucose value or medical alert. The entire output remains hidden unless Clinical signs off the exact formula, input definitions, thresholds, labels and test vectors for the released rule version.</p>
+<h3>17.1 Prerequisites</h3>
+<ul>
+<li>Complete confirmed meal composition.</li>
+<li>Total carbohydrate, free sugar, fibre, protein and total fat.</li>
+<li>Curated <code>refined/high-GI</code> classification for each carbohydrate item.</li>
+<li>No unresolved confirmed carbohydrate item.</li>
+</ul>
+<p>The classification must come from governed food-catalogue metadata, not image-model inference.</p>
+<p><code>freeSugarG</code> is already included in total carbohydrate; the additional coefficient below is an intentional weighting factor in the supplied heuristic, not a second carbohydrate quantity.</p>
+<p>Input validation before calculation:</p>
+<pre><code class="language-text">all inputs must be finite and &gt;= 0
+0 &lt;= refinedCarbohydrate &lt;= totalCarbohydrate
+</code></pre>
+<p>If validation fails, suppress the score and return a calculation-unavailable state.</p>
+<h3>17.2 Formula</h3>
+<pre><code class="language-text">refinedCarbohydrate =
+    SUM(carbohydrate from confirmed items classified refined/high-GI)
+
+refinedShare =
+    0                                      if totalCarbohydrate == 0
+    refinedCarbohydrate / totalCarbohydrate otherwise
+
+baseLoad =
+    totalCarbohydrate × (0.7 + 0.6 × refinedShare)
+    + freeSugar × 1.5
+
+protectiveFactor =
+    fibre × 4
+    + protein × 1.6
+    + totalFat × 0.8
+
+deduction = MIN(baseLoad × 0.35, protectiveFactor)
+
+estimatedGlucoseImpactScore = baseLoad - deduction
+</code></pre>
+<h3>17.3 Classification</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:right"><code>estimatedGlucoseImpactScore</code></th>
+<th>Display category</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right"><code>≤ 38</code></td>
+<td>Small estimated glucose impact</td>
+</tr>
+<tr>
+<td style="text-align:right"><code>&gt; 38</code> and <code>≤ 70</code></td>
+<td>Moderate estimated glucose impact</td>
+</tr>
+<tr>
+<td style="text-align:right"><code>&gt; 70</code></td>
+<td>Large estimated glucose impact</td>
+</tr>
+</tbody>
+</table>
+<h3>17.4 Required copy</h3>
+<blockquote>
+<p>This is estimated from the meal composition. It is not a blood-glucose reading.</p>
+</blockquote>
+<p>Do not display the category if a prerequisite is missing. Do not infer that the meal changed the user's actual glucose.</p>
+<hr/>
+<h2>18. Observation and suggestion logic</h2>
+<p>All user guidance must come from approved deterministic templates. Do not generate medical/nutrition recommendations freely with an LLM.</p>
+<h3>18.1 Leading observations</h3>
+<ol>
+<li>Select all rows with <code>severity &gt; 0</code>.</li>
+<li>Sort by:
+<ol>
+<li>severity descending,</li>
+<li>priority-row order,</li>
+<li>relative deviation from the relevant threshold,</li>
+<li>fixed display order as final tie-breaker.</li>
+</ol>
+</li>
+<li>Show no more than three.</li>
+</ol>
+<p>Relative deviation used for ordering:</p>
+<pre><code class="language-text">upper-limit row: MAX(0, actual / target - 1)
+lower-target row: MAX(0, 1 - actual / target)
+carbohydrate high: MAX(0, actual / upper - 1)
+carbohydrate very low: MAX(0, 1 - actual / (lower × 0.50))
+</code></pre>
+<p>Final fixed tie order is: saturated fat, fibre, free sugar, sodium, carbohydrate, protein, energy.</p>
+<h3>18.2 Positive observations</h3>
+<ul>
+<li>Select only rows with <code>severity == 0</code>.</li>
+<li>Show no more than three.</li>
+<li>Never describe missing/unavailable information as positive.</li>
+</ul>
+<h3>18.3 Action selection</h3>
+<p>Rank candidate actions using the same issue ordering. Show no more than three actions.</p>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th>Deterministic action rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Energy high</td>
+<td>Identify the confirmed item contributing the most energy; suggest reducing its portion</td>
+</tr>
+<tr>
+<td>Carbohydrate high</td>
+<td>Identify the largest refined/high-GI carbohydrate contributor; suggest a smaller portion</td>
+</tr>
+<tr>
+<td>Protein low</td>
+<td>Offer one preference/allergy-compatible protein candidate from the approved content catalogue</td>
+</tr>
+<tr>
+<td>Fibre low</td>
+<td>Offer one preference/allergy-compatible fibre/vegetable candidate from the approved content catalogue</td>
+</tr>
+<tr>
+<td>Saturated fat high</td>
+<td>Identify the largest saturated-fat contributor; suggest a smaller portion or approved lower-fat preparation</td>
+</tr>
+<tr>
+<td>Free sugar high</td>
+<td>Identify the largest free-sugar contributor; suggest removing it or choosing an approved unsweetened/reduced-sugar form</td>
+</tr>
+<tr>
+<td>Sodium high</td>
+<td>Identify the largest sodium contributor; suggest reducing it, added salt, or the relevant high-salt accompaniment</td>
+</tr>
+</tbody>
+</table>
+<p>Additional rules:</p>
+<ul>
+<li>Never claim that an unconfirmed food was present.</li>
+<li>Never recommend skipping a meal.</li>
+<li>Never recommend medication changes.</li>
+<li>Never use a static/random rotating “longevity boost.”</li>
+<li>If the triggering contributor cannot be identified, show nutrient-level guidance only.</li>
+<li>Apply diet-preference, allergy and medicine guards before choosing an add/swap.</li>
+<li>If no compliant candidate remains, omit the specific food suggestion.</li>
+<li>In <code>FACTS_ONLY</code> mode, suppress all action suggestions.</li>
+<li>If “This week” or “Tomorrow's experiment” remains in the design, it must use the highest-ranked available action rather than a random tip.</li>
+</ul>
+<h4>Exact action simulation</h4>
+<ul>
+<li>For a “reduce existing item” action, calculate the reduction needed for the triggered nutrient to reach its target using that item's nutrient contribution.</li>
+<li>Clamp the proposed reduction to <code>10%–50%</code> of that item's confirmed quantity, then round to the nearest smaller supported catalogue portion step.</li>
+<li>Recalculate the complete meal using the proposed change before showing it.</li>
+<li>For an “add” action, use one clinically approved catalogue candidate and its configured serving size; never invent a serving in the client.</li>
+<li>Suppress any action that increases the severity of energy, sodium, saturated fat or free sugar, introduces a declared allergen/preference conflict, or causes a main-meal carbohydrate total below 30 g when the medicine guard applies.</li>
+<li>Remove duplicate actions that target the same food and nutrient; retain the higher-ranked action.</li>
+<li>If simulation does not improve the triggering row or no compliant portion exists, show neutral nutrient-level education instead of an action.</li>
+</ul>
+<hr/>
+<h2>19. Calculation examples and boundary tests</h2>
+<p>These examples are part of the functional contract and should be automated tests.</p>
+<h3>19.1 Breakfast energy boundary</h3>
+<p>Breakfast energy target = <code>500 kcal</code>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:right">Actual</th>
+<th style="text-align:right">Expected severity</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">500</td>
+<td style="text-align:right">0</td>
+<td>Equality is within target</td>
+</tr>
+<tr>
+<td style="text-align:right">501</td>
+<td style="text-align:right">1</td>
+<td>Greater than target after scoring normalisation</td>
+</tr>
+<tr>
+<td style="text-align:right">700</td>
+<td style="text-align:right">1</td>
+<td>Severity 2 uses strict <code>&gt;</code></td>
+</tr>
+<tr>
+<td style="text-align:right">701</td>
+<td style="text-align:right">2</td>
+<td>Greater than <code>500 × 1.40</code> after scoring normalisation</td>
+</tr>
+</tbody>
+</table>
+<h3>19.2 Breakfast fibre boundary</h3>
+<p>Unrounded target = <code>7.5 g</code>; severe boundary = <code>4.5 g</code>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:right">Actual</th>
+<th style="text-align:right">Expected severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">7.5</td>
+<td style="text-align:right">0</td>
+</tr>
+<tr>
+<td style="text-align:right">7.4</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td style="text-align:right">4.5</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td style="text-align:right">4.4</td>
+<td style="text-align:right">2</td>
+</tr>
+</tbody>
+</table>
+<h3>19.3 Breakfast carbohydrate boundary</h3>
+<p>Range = <code>30–45 g</code>; high severe boundary = <code>60.75 g</code>; very-low threshold = <code>15 g</code>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:right">Actual</th>
+<th style="text-align:right">Expected severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">45</td>
+<td style="text-align:right">0</td>
+</tr>
+<tr>
+<td style="text-align:right">45.1</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td style="text-align:right">60.7</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td style="text-align:right">60.8</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td style="text-align:right">15</td>
+<td style="text-align:right">0</td>
+</tr>
+<tr>
+<td style="text-align:right">14.9</td>
+<td style="text-align:right">1</td>
+</tr>
+</tbody>
+</table>
+<h3>19.4 Overall verdict example</h3>
+<ul>
+<li>Saturated fat severity <code>0</code></li>
+<li>Fibre severity <code>1</code></li>
+<li>Free sugar severity <code>0</code></li>
+<li>Sodium severity <code>0</code></li>
+<li>All other rows severity <code>0</code></li>
+</ul>
+<p>Expected overall verdict: <strong>AMBER</strong>, because fibre is a priority row with severity <code>1</code>.</p>
+<h3>19.5 Estimated glucose-impact example</h3>
+<p>Confirmed totals:</p>
+<ul>
+<li>carbohydrate = <code>60 g</code></li>
+<li>refined/high-GI carbohydrate = <code>30 g</code></li>
+<li>free sugar = <code>5 g</code></li>
+<li>fibre = <code>8 g</code></li>
+<li>protein = <code>25 g</code></li>
+<li>total fat = <code>20 g</code></li>
+</ul>
+<pre><code class="language-text">refinedShare = 30 / 60 = 0.5
+baseLoad = 60 × (0.7 + 0.6 × 0.5) + 5 × 1.5
+         = 60 × 1.0 + 7.5
+         = 67.5
+
+protectiveFactor = 8 × 4 + 25 × 1.6 + 20 × 0.8
+                 = 32 + 40 + 16
+                 = 88
+
+deduction = MIN(67.5 × 0.35, 88)
+          = 23.625
+
+estimatedGlucoseImpactScore = 67.5 - 23.625
+                            = 43.875
+</code></pre>
+<p>Expected display: <strong>Moderate estimated glucose impact</strong>.</p>
+<hr/>
+</article></div></body></html>

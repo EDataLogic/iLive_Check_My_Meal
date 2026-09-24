@@ -1,0 +1,13 @@
+{
+  "attemptId": "demo-attempt-001",
+  "attemptRevision": 1,
+  "status": "DRAFT",
+  "createdAt": "2026-09-24T06:30:00Z",
+  "expiresAt": "2026-09-24T07:30:00Z",
+  "analysisPolicyId": "FREE_HEART_HEALTH_MEAL_V1",
+  "ruleVersion": "CLINICAL_RELEASE_TO_BE_ASSIGNED",
+  "foodCatalogueVersion": "APPROVED_RELEASE_TO_BE_ASSIGNED",
+  "safetyAnswerRevision": 1,
+  "consentVersion": "APPROVED_VERSION_TO_BE_ASSIGNED",
+  "fixtureOnly": true
+}
